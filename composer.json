@@ -1,5 +1,5 @@
 {
-    "name": "LionMM/sentry-cron-monitoring-laravel",
+    "name": "lionmm/sentry-cron-monitoring-laravel",
     "description": "A helper package to utilize the Cron Job monitoring tool from Sentry",
     "keywords": [
         "sentry",
