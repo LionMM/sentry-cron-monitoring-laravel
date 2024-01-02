@@ -34,25 +34,31 @@ class SentryCronMonitoringLaravelServiceProvider extends ServiceProvider
                 return $event;
             }
 
-            return $event
-                ->before(function () use ($uri, $dsn, $monitorId) {
-                    Http::withToken($dsn, 'DSN')
-                        ->post($uri.$monitorId.'/checkins/', [
-                            'status' => 'in_progress',
-                        ]);
-                })
-                ->onSuccess(function () use ($uri, $dsn, $monitorId) {
-                    Http::withToken($dsn, 'DSN')
-                        ->put($uri.$monitorId.'/checkins/latest/', [
-                            'status' => 'ok',
-                        ]);
-                })
-                ->onFailure(function () use ($uri, $dsn, $monitorId) {
-                    Http::withToken($dsn, 'DSN')
-                        ->put($uri.$monitorId.'/checkins/latest/', [
-                            'status' => 'error',
-                        ]);
-                });
+            try {
+                return $event
+                    ->before(function () use ($uri, $dsn, $monitorId) {
+                        Http::withToken($dsn, 'DSN')
+                            ->post($uri.$monitorId.'/checkins/', [
+                                'status' => 'in_progress',
+                            ]);
+                    })
+                    ->onSuccess(function () use ($uri, $dsn, $monitorId) {
+                        Http::withToken($dsn, 'DSN')
+                            ->put($uri.$monitorId.'/checkins/latest/', [
+                                'status' => 'ok',
+                            ]);
+                    })
+                    ->onFailure(function () use ($uri, $dsn, $monitorId) {
+                        Http::withToken($dsn, 'DSN')
+                            ->put($uri.$monitorId.'/checkins/latest/', [
+                                'status' => 'error',
+                            ]);
+                    });
+            } catch (\Throwable $t) {
+                Log::error($t->getMessage());
+
+                return $event;
+            }
         });
     }
 
